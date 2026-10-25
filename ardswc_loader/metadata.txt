@@ -4,14 +4,15 @@ qgisMinimumVersion=3.34
 qgisMaximumVersion=4.99
 supportsQt6=True
 description=Load the open map data of Taiwan's Agency of Rural Development and Soil and Water Conservation (ARDSWC, 水保署) for the current map view as scratch layers, and export them in one click.
-about=Connects QGIS to the open-data APIs of the ARDSWC data platform (https://data.ardswc.gov.tw/Data/OpenData/Api). Tick any of 21 datasets: debris-flow potential streams and their catchments / affected areas, large-scale landslide potential areas, landslide inventories, sub-catchments, slopeland and special soil-and-water-conservation areas, farm roads, rural regeneration communities, disaster photos, major debris-disaster reports and the UAV ortho-image catalogue. Whenever the map is panned or zoomed, the plugin downloads the data inside the visible extent - vector tiles are decoded and the pieces of each feature are merged - and shows them as styled memory layers. Selected UAV image footprints can be added as image tile layers. All scratch layers can be exported in one click to GeoPackage, Shapefile or GeoJSON, in WGS 84 or TWD97.
-    Requires an internet connection; no extra Python packages. Data: ARDSWC open data declaration - free re-use, please credit the source.
-    在 QGIS 直接介接農業部農村發展及水土保持署資料平台的開放資料 API。勾選資料項目後，移動或縮放地圖即自動下載畫面範圍內的資料（向量圖磚會解碼並合併同一圖徵的碎片），以暫存圖層顯示；可將選取的 UAV 正射影像加入為影像圖層，並一鍵將所有暫存圖層匯出為 GeoPackage、Shapefile 或 GeoJSON（WGS84 或 TWD97）。資料依水保署政府網站資料開放宣告提供，使用時請註明出處。
-version=1.0.1
+about=Connects QGIS to the open-data APIs of the ARDSWC data platform (https://data.ardswc.gov.tw/Data/OpenData/Api). Tick any of 21 datasets: debris-flow potential streams and their catchments / affected areas, large-scale landslide potential areas, landslide inventories, sub-catchments, slopeland and special soil-and-water-conservation areas, farm roads, rural regeneration communities, disaster photos, major debris-disaster reports and the UAV ortho-image catalogue. The plugin downloads the data inside the visible extent (on demand, or automatically when the map moves if enabled) - vector tiles are decoded and the pieces of each feature are merged - and shows them as styled memory layers. Selected UAV image footprints can be added as image tile layers. All scratch layers can be exported in one click to GeoPackage, Shapefile or GeoJSON, in WGS 84 or TWD97.
+    Requires an internet connection; no extra Python packages. Please avoid querying very large areas so as not to overload the ARDSWC servers. Data: ARDSWC open data declaration - free re-use, please credit the source.
+    在 QGIS 直接介接農業部農村發展及水土保持署資料平台的開放資料 API。勾選資料項目後下載畫面範圍內的資料，向量圖磚會解碼並合併同一圖徵的碎片，以暫存圖層顯示（可選擇移動地圖時自動更新）；可將選取的 UAV 正射影像加入為影像圖層，並一鍵將所有暫存圖層匯出為 GeoPackage、Shapefile 或 GeoJSON（WGS84 或 TWD97）。資料依水保署政府網站資料開放宣告提供，使用時請註明出處；請避免查詢過大的範圍，以免造成服務主機負荷過大。
+version=1.0.2
 author=黃敏郎
 email=yoshi.hml@gmail.com
 
-changelog=1.0.1: Debris-flow potential streams are labelled with their number (debrisno) along the stream; line labels now use line placement.
+changelog=1.0.2: "Update when the map moves" is now off by default; the panel reminds users not to query very large areas to avoid overloading the ARDSWC servers.
+    1.0.1: Debris-flow potential streams are labelled with their number (debrisno) along the stream; line labels now use line placement.
     1.0.0: First release - 16 vector-tile datasets, 4 point datasets and the UAV ortho-image catalogue from the ARDSWC open-data platform; extent-driven loading into memory layers; UAV image tiles; one-click export.
 
 tags=taiwan,soil and water conservation,debris flow,landslide,slope,farm road,uav,vector tiles,api,open data

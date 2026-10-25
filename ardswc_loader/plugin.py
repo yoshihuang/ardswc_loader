@@ -72,6 +72,7 @@ class ArdswcLoader:
         self.dock.refresh_requested.connect(lambda: self.refresh(force=True))
         self.dock.export_requested.connect(self.export_all)
         self.dock.auto_toggled.connect(self._on_auto_toggled)
+        self.dock.force_check.toggled.connect(self._on_force_toggled)
         self.dock.uav_requested.connect(self.add_selected_uav)
         self.dock.visibilityChanged.connect(self.action.setChecked)
         self.iface.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock)
@@ -104,7 +105,8 @@ class ArdswcLoader:
     # -- settings --------------------------------------------------------------
     def _restore_settings(self):
         settings = QgsSettings()
-        self.dock.auto_check.setChecked(settings.value(SETTINGS + "auto", True, type=bool))
+        # New key (1.0.2): auto update starts switched off for everyone.
+        self.dock.auto_check.setChecked(settings.value(SETTINGS + "auto_update", False, type=bool))
         self.dock.select_combo(self.dock.format_combo, settings.value(SETTINGS + "format", "gpkg_single"))
         self.dock.select_combo(self.dock.crs_combo, settings.value(SETTINGS + "crs", "EPSG:3826"))
         # Checked datasets are deliberately not restored: nothing should start
@@ -114,7 +116,7 @@ class ArdswcLoader:
         if self.dock is None:
             return
         settings = QgsSettings()
-        settings.setValue(SETTINGS + "auto", self.dock.auto_check.isChecked())
+        settings.setValue(SETTINGS + "auto_update", self.dock.auto_check.isChecked())
         settings.setValue(SETTINGS + "format", self.dock.export_format())
         settings.setValue(SETTINGS + "crs", self.dock.export_crs())
 
@@ -124,6 +126,12 @@ class ArdswcLoader:
             self.dock.setVisible(checked)
             if checked:
                 self._schedule()
+
+    def _on_force_toggled(self, enabled):
+        if enabled:
+            self.iface.messageBar().pushMessage(
+                TITLE, "已放寬查詢範圍上限。請避免一次查詢過大的範圍，以免造成水保署服務主機負荷過大。",
+                Qgis.MessageLevel.Warning, 8)
 
     def _on_auto_toggled(self, enabled):
         if enabled:
@@ -192,7 +200,8 @@ class ArdswcLoader:
             requests = plan_requests(dataset, bbox, force or self.dock.force_check.isChecked())
         except TooLarge as exc:
             self.fetcher.cancel(key)
-            self.dock.set_state(key, "請放大地圖", "%s；圖層保留上一次的內容。可勾選「忽略建議範圍」放寬上限。" % exc)
+            self.dock.set_state(key, "請放大地圖", "%s；圖層保留上一次的內容。"
+                                "為避免造成水保署主機負荷，建議分區放大查詢。" % exc)
             return
         self._requested[key] = bbox
         self.fetcher.fetch(dataset, bbox, requests)

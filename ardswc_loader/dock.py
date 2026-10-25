@@ -42,8 +42,8 @@ class ArdswcDock(QgsDockWidget):
         layout = QVBoxLayout(body)
         layout.setContentsMargins(6, 6, 6, 6)
 
-        hint = QLabel("勾選資料項目後，移動或縮放地圖時會自動下載目前畫面範圍內的資料，"
-                      "以暫存圖層顯示。")
+        hint = QLabel("勾選資料項目後，會下載目前畫面範圍內的資料，以暫存圖層顯示。"
+                      "移動地圖後請按「立即更新」，或勾選「移動地圖時自動更新」。")
         hint.setWordWrap(True)
         layout.addWidget(hint)
 
@@ -72,12 +72,19 @@ class ArdswcDock(QgsDockWidget):
         layout.addLayout(buttons)
 
         self.auto_check = QCheckBox("移動地圖時自動更新")
-        self.auto_check.setChecked(True)
+        self.auto_check.setChecked(False)
+        self.auto_check.setToolTip("預設不勾選：每次移動或縮放地圖都會向水保署主機查詢，請視需要再開啟。")
         self.auto_check.toggled.connect(self.auto_toggled)
         layout.addWidget(self.auto_check)
         self.force_check = QCheckBox("忽略建議範圍（大範圍可能要下載很久）")
-        self.force_check.setToolTip("向量圖磚資料預設最多下載 48 張圖磚；勾選後放寬到 400 張（z12）。")
+        self.force_check.setToolTip("向量圖磚資料預設最多下載 48 張圖磚；勾選後放寬到 400 張（z12）。"
+                                    "大範圍查詢會大量請求水保署主機，請盡量避免。")
         layout.addWidget(self.force_check)
+        self.load_warning = QLabel("⚠ 請避免查詢過大的地圖範圍（例如整個縣市或全臺），"
+                                   "以免造成水保署服務主機負荷過大；需要大範圍資料時，請分區放大查詢。")
+        self.load_warning.setWordWrap(True)
+        self.load_warning.setStyleSheet("color: #b35900;")
+        layout.addWidget(self.load_warning)
 
         self.uav_button = QPushButton("加入選取的 UAV 正射影像")
         self.uav_button.setToolTip("先在「UAV 空拍正射影像範圍」圖層選取影像範圍（最多 10 幅），再按此鈕加入影像圖磚")

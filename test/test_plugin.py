@@ -293,6 +293,13 @@ check("checking datasets loads them", wait(lambda: all(
     plugin.layers.layer(k) is not None and plugin.layers.layer(k).featureCount() > 0
     for k in ["debris_flow", "uav_ortho", "photo_disaster"]), 30),
     {k: plugin.dock._items[k].text(1) for k in ["debris_flow", "uav_ortho", "photo_disaster"]})
+check("auto update is off by default", not plugin.dock.auto_check.isChecked())
+check("load warning shown in panel", "負荷" in plugin.dock.load_warning.text())
+REQUESTS.clear()
+canvas.setExtent(to3857.transformBoundingBox(QgsRectangle(121.59, 24.965, 121.65, 25.005)))
+wait(lambda: False, 1.5)
+check("auto off: panning sends no requests", not REQUESTS, REQUESTS[:3])
+plugin.dock.auto_check.setChecked(True)
 canvas.setExtent(to3857.transformBoundingBox(QgsRectangle(119.5, 22.0, 122.5, 25.5)))
 wait(lambda: plugin.dock._items["debris_flow"].text(1) == "請放大地圖", 5)
 check("zoomed out: tiles refused, catalogs still filtered", plugin.dock._items["debris_flow"].text(1) == "請放大地圖"
