@@ -244,6 +244,9 @@ manager.replace_features(BY_KEY["debris_flow"], done["debris_flow"][0], bbox)
 lyr = manager.layer("debris_flow")
 cats = [c.label() for c in lyr.renderer().categories()]
 check("risk legend ordered 高/中/低", cats == ["風險：高", "風險：中", "風險：低"], cats)
+check("debris_flow labelled with debrisno along the line",
+      lyr.labelsEnabled() and lyr.labeling().settings().fieldName == "debrisno"
+      and lyr.labeling().settings().placement == Qgis.LabelPlacement.Line)
 check("fields created from tile attributes", {"gid", "debrisno", "risk"} <= set(lyr.fields().names()), lyr.fields().names())
 manager.replace_features(BY_KEY["photo_disaster"], done["photo_disaster"][0], bbox)
 pl = manager.layer("photo_disaster")

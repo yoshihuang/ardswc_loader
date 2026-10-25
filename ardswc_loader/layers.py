@@ -80,7 +80,7 @@ def _hatch(color, width):
     return QgsFillSymbol([hatch, outline])
 
 
-def _labeling(expression, size=8.0, color="#1d3557", polygon=False):
+def _labeling(expression, size=8.0, color="#1d3557", geometry=None):
     settings = QgsPalLayerSettings()
     settings.fieldName = expression
     settings.isExpression = "(" in expression or '"' in expression
@@ -96,7 +96,11 @@ def _labeling(expression, size=8.0, color="#1d3557", polygon=False):
     buffer.setColor(QColor("white"))
     text_format.setBuffer(buffer)
     settings.setFormat(text_format)
-    if polygon:
+    if geometry == LINE:
+        # Labels follow the line; short streams may overrun the ends a little.
+        settings.placement = _PLACEMENT.Line
+        settings.lineSettings().setOverrunDistance(4.0)
+    elif geometry != POINT:
         settings.placement = _PLACEMENT.Horizontal
     return QgsVectorLayerSimpleLabeling(settings)
 
@@ -153,7 +157,7 @@ def apply_style(layer, dataset):
             '<b>[% "Disaster" %]</b>（[% "DisasterType" %]）<br>[% "County" %][% "Town" %][% "Vill" %]　'
             '[% "Location" %]<br>[% "DisasterDescription" %]<br><a href="[% "ReportUrl" %]">災情報告 PDF</a>')
     if style.get("label"):
-        layer.setLabeling(_labeling(style["label"], polygon=dataset.geometry not in (POINT, LINE)))
+        layer.setLabeling(_labeling(style["label"], geometry=dataset.geometry))
         layer.setLabelsEnabled(True)
 
 
